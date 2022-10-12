@@ -10,20 +10,18 @@ import com.fongmi.android.tv.bean.Live;
 import com.fongmi.android.tv.bean.Parse;
 import com.fongmi.android.tv.bean.Site;
 import com.fongmi.android.tv.net.Callback;
-import com.fongmi.android.tv.net.OKHttp;
 import com.fongmi.android.tv.utils.FileUtil;
 import com.fongmi.android.tv.utils.Json;
 import com.fongmi.android.tv.utils.Prefers;
+import com.fongmi.android.tv.utils.Utils;
 import com.github.catvod.crawler.Spider;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 
 import org.json.JSONObject;
 
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,36 +83,24 @@ public class ApiConfig {
 
     public void loadConfig(boolean cache, Callback callback) {
         new Thread(() -> {
-            String url = Prefers.getUrl();
-            if (cache) getCacheConfig(url, callback);
-            else if (url.startsWith("http")) getWebConfig(url, callback);
-            else if (url.startsWith("file")) getFileConfig(url, callback);
-            else handler.post(() -> callback.error(0));
+            if (cache) loadCache(Prefers.getUrl(), callback);
+            else loadConfig(Prefers.getUrl(), callback);
         }).start();
     }
 
-    private void getFileConfig(String url, Callback callback) {
-        try {
-            parseConfig(new Gson().fromJson(new JsonReader(new FileReader(FileUtil.getLocal(url))), JsonObject.class), callback);
-        } catch (Exception e) {
-            e.printStackTrace();
-            getCacheConfig(url, callback);
-        }
-    }
-
-    private void getWebConfig(String url, Callback callback) {
-        try {
-            parseConfig(new Gson().fromJson(OKHttp.newCall(url).execute().body().string(), JsonObject.class), callback);
-        } catch (Exception e) {
-            e.printStackTrace();
-            getCacheConfig(url, callback);
-        }
-    }
-
-    private void getCacheConfig(String url, Callback callback) {
+    private void loadCache(String url, Callback callback) {
         String json = Config.find(url).getJson();
         if (!TextUtils.isEmpty(json)) parseConfig(JsonParser.parseString(json).getAsJsonObject(), callback);
         else handler.post(() -> callback.error(R.string.error_config_get));
+    }
+
+    private void loadConfig(String url, Callback callback) {
+        try {
+            parseConfig(new Gson().fromJson(Decoder.getJson(url), JsonObject.class), callback);
+        } catch (Exception e) {
+            e.printStackTrace();
+            loadCache(url, callback);
+        }
     }
 
     private void parseConfig(JsonObject object, Callback callback) {
@@ -149,7 +135,8 @@ public class ApiConfig {
     private String parseExt(String ext) {
         if (ext.startsWith("http")) return ext;
         else if (ext.startsWith("file")) return FileUtil.read(ext);
-        else if (ext.endsWith(".json")) return parseExt(FileUtil.convert(ext));
+        else if (ext.startsWith("img+")) return Decoder.getExt(ext);
+        else if (ext.endsWith(".json")) return parseExt(Utils.convert(ext));
         return ext;
     }
 
