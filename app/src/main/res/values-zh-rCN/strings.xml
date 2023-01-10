@@ -11,10 +11,11 @@
     <string name="vod_last">上次看到<xliff:g name="name">%s</xliff:g></string>
 
     <!-- Live -->
-    <string name="live_epg_now">正在播放：<xliff:g name="name">%s</xliff:g>/<xliff:g name="name">%s</xliff:g></string>
-    <string name="live_epg_next">下个节目：<xliff:g name="name">%s</xliff:g>/<xliff:g name="name">%s</xliff:g></string>
-    <string name="live_epg_empty">暂无节目资讯</string>
-    <string name="live_line">线路 <xliff:g name="name">%s</xliff:g>/<xliff:g name="name">%s</xliff:g></string>
+    <string name="live_pass">密码</string>
+    <string name="live_group">未分类</string>
+    <string name="live_setting">设定</string>
+    <string name="live_epg_now">正在播放：<xliff:g name="name">%s</xliff:g></string>
+    <string name="live_line">线路 <xliff:g name="name">%s</xliff:g></string>
 
     <!-- Push -->
     <string name="push_clip">推送剪贴板内容</string>
@@ -29,20 +30,22 @@
     <string name="detail_actor">演员：<xliff:g name="name">%s</xliff:g></string>
     <string name="detail_content">简介：<xliff:g name="name">%s</xliff:g></string>
     <string name="detail_desc">简介</string>
-    <string name="detail_keep">收藏</string>
-    <string name="detail_keep_add">已加入收藏</string>
-    <string name="detail_keep_del">已取消收藏</string>
+
+    <!-- Keep -->
+    <string name="keep">收藏</string>
+    <string name="keep_add">已加入收藏</string>
+    <string name="keep_del">已取消收藏</string>
 
     <!-- Play -->
     <string name="play">播放</string>
     <string name="play_next">下一集</string>
     <string name="play_prev">上一集</string>
     <string name="play_ready">准备播放：<xliff:g name="name">%s</xliff:g></string>
-    <string name="play_replay">重播</string>
-    <string name="play_reset">重置</string>
-    <string name="play_tracks">轨道</string>
-    <string name="play_op">片头</string>
-    <string name="play_ed">片尾</string>
+    <string name="play_track_text">字幕</string>
+    <string name="play_track_audio">音轨</string>
+    <string name="play_invert">反转</string>
+    <string name="play_across">跨类</string>
+    <string name="play_oped">片头片尾</string>
     <string name="play_reverse">倒序</string>
     <string name="play_forward">→</string>
     <string name="play_backward">←</string>
@@ -57,11 +60,15 @@
     <!-- Setting -->
     <string name="setting_vod">点播</string>
     <string name="setting_live">直播</string>
+    <string name="setting_wall">壁纸</string>
+    <string name="setting_player">播放器</string>
+    <string name="setting_decode">解码方式</string>
     <string name="setting_render">渲染方式</string>
     <string name="setting_scale">缩放比例</string>
     <string name="setting_quality">图片品质</string>
     <string name="setting_size">图片尺寸</string>
     <string name="setting_version">版本</string>
+    <string name="setting_storage">权限</string>
 
     <!-- Dialog -->
     <string name="dialog_positive">确定</string>
@@ -69,6 +76,7 @@
     <string name="dialog_config_hint">请输入接口…</string>
 
     <!-- Error -->
+    <string name="error_so_load">FFmpeg 加载失败</string>
     <string name="error_config_get">配置取得失败</string>
     <string name="error_config_parse">配置解析失败</string>
     <string name="error_play_next">已经是最后一集了！</string>
@@ -81,6 +89,7 @@
 
     <!-- Update -->
     <string name="update_version">发现新版本 <xliff:g name="name">%s</xliff:g></string>
+    <string name="update_check">正在检测更新…</string>
     <string name="update_confirm">更新</string>
 
     <!-- Crash -->
@@ -92,6 +101,16 @@
 
     <!-- UNIT -->
     <string name="all">全部</string>
+
+    <string-array name="select_decode">
+        <item>软解</item>
+        <item>硬解</item>
+    </string-array>
+
+    <string-array name="select_player">
+        <item>EXO</item>
+        <item>IJK</item>
+    </string-array>
 
     <string-array name="select_quality">
         <item>低</item>
@@ -111,6 +130,11 @@
         <item>4:3</item>
         <item>填充</item>
         <item>裁剪</item>
+    </string-array>
+
+    <string-array name="select_reset">
+        <item>刷新</item>
+        <item>重播</item>
     </string-array>
 
 </resources>

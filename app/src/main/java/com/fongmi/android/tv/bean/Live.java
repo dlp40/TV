@@ -8,7 +8,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class Live {
@@ -31,6 +30,8 @@ public class Live {
     private List<Channel> channels;
     @SerializedName("groups")
     private List<Group> groups;
+    @SerializedName("core")
+    private Core core;
 
     private boolean activated;
 
@@ -79,12 +80,16 @@ public class Live {
         return TextUtils.isEmpty(ua) ? "" : ua;
     }
 
-    public List<Channel> getChannels() {
+    private List<Channel> getChannels() {
         return channels = channels == null ? new ArrayList<>() : channels;
     }
 
     public List<Group> getGroups() {
         return groups = groups == null ? new ArrayList<>() : groups;
+    }
+
+    public Core getCore() {
+        return core;
     }
 
     public boolean isActivated() {
@@ -99,19 +104,17 @@ public class Live {
         this.activated = item.equals(this);
     }
 
-    public String getActivatedName() {
-        return (isActivated() ? "√ " : "").concat(getName());
+    public Live check() {
+        boolean proxy = getGroup().equals("redirect") && getChannels().size() > 0 && getChannels().get(0).getUrls().size() > 0 && getChannels().get(0).getUrls().get(0).startsWith("proxy") && getChannels().get(0).getUrls().get(0).contains("ext=");
+        if (proxy) this.url = getChannels().get(0).getUrls().get(0).split("ext=")[1];
+        if (proxy) this.name = getChannels().get(0).getName();
+        return this;
     }
 
-    public boolean isProxy() {
-        return getGroup().equals("redirect") && getChannels().size() > 0 && getChannels().get(0).getUrls().size() > 0 && getChannels().get(0).getUrls().get(0).startsWith("proxy");
-    }
-
-    public Group find(Group group) {
-        int index = getGroups().indexOf(group);
-        if (index != -1) return getGroups().get(index);
-        getGroups().add(group);
-        return group;
+    public Group find(Group item) {
+        for (Group group : getGroups()) if (group.getName().equals(item.getName())) return group;
+        getGroups().add(item);
+        return item;
     }
 
     @Override
@@ -120,13 +123,5 @@ public class Live {
         if (!(obj instanceof Live)) return false;
         Live it = (Live) obj;
         return getName().equals(it.getName()) && getUrl().equals(it.getUrl());
-    }
-
-    public static class Sorter implements Comparator<Live> {
-
-        @Override
-        public int compare(Live live1, Live live2) {
-            return Boolean.compare(live2.isActivated(), live1.isActivated());
-        }
     }
 }

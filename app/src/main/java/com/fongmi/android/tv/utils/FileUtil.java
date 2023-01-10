@@ -11,10 +11,17 @@ import androidx.core.content.FileProvider;
 
 import com.fongmi.android.tv.App;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.utils.IOUtils;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLConnection;
 import java.security.MessageDigest;
@@ -27,12 +34,16 @@ public class FileUtil {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
+    public static File getRootFile(String path) {
+        return new File(getRootPath() + File.separator + path);
+    }
+
     public static File getCacheDir() {
         return App.get().getCacheDir();
     }
 
     public static File getCacheDir(String folder) {
-        return new File(getCachePath() + "/" + folder);
+        return new File(getCachePath() + File.separator + folder);
     }
 
     public static String getCachePath() {
@@ -44,7 +55,11 @@ public class FileUtil {
     }
 
     public static File getJar(String fileName) {
-        return getCacheFile(Utils.getMD5(fileName).concat(".jar"));
+        return getCacheFile(Utils.getMd5(fileName).concat(".jar"));
+    }
+
+    public static File getWall(int index) {
+        return getCacheFile("wallpaper_" + index);
     }
 
     public static File getLocal(String path) {
@@ -61,7 +76,7 @@ public class FileUtil {
         return TextUtils.isEmpty(mimeType) ? "*/*" : mimeType;
     }
 
-    public static File write(File file, byte[] data) throws Exception {
+    public static File write(File file, byte[] data) throws IOException {
         FileOutputStream fos = new FileOutputStream(file);
         fos.write(data);
         fos.flush();
@@ -80,6 +95,32 @@ public class FileUtil {
             return Utils.substring(sb.toString());
         } catch (Exception e) {
             return "";
+        }
+    }
+
+    public static void unzip(File target, String path) {
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(new BufferedInputStream(new FileInputStream(target)))) {
+            ZipArchiveEntry entry;
+            while ((entry = in.getNextZipEntry()) != null) {
+                File out = new File(path, entry.getName());
+                if (entry.isDirectory()) out.mkdirs();
+                else copy(in, out);
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static void copy(File in, File out) {
+        try {
+            IOUtils.copy(new FileInputStream(in), new FileOutputStream(out));
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static void copy(InputStream in, File out) {
+        try {
+            IOUtils.copy(in, new FileOutputStream(out));
+        } catch (Exception ignored) {
         }
     }
 

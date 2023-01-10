@@ -8,14 +8,14 @@ import androidx.room.PrimaryKey;
 
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.db.AppDatabase;
-import com.google.gson.Gson;
+import com.fongmi.android.tv.gson.StringAdapter;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Collections;
 import java.util.List;
 
-@Entity(ignoredColumns = {"type", "api", "playUrl", "ext", "jar", "categories"})
+@Entity(ignoredColumns = {"type", "api", "playUrl", "playerType", "ext", "jar", "categories"})
 public class Site {
 
     @NonNull
@@ -30,6 +30,8 @@ public class Site {
     private String api;
     @SerializedName("playUrl")
     private String playUrl;
+    @SerializedName("playerType")
+    private Integer playerType;
     @SerializedName("searchable")
     private Integer searchable;
     @SerializedName("filterable")
@@ -45,7 +47,7 @@ public class Site {
 
     public static Site objectFrom(JsonElement element) {
         try {
-            return new Gson().fromJson(element, Site.class);
+            return StringAdapter.gson().fromJson(element, Site.class);
         } catch (Exception e) {
             return new Site();
         }
@@ -100,8 +102,12 @@ public class Site {
         return playUrl;
     }
 
+    public int getPlayerType() {
+        return playerType == null ? -1 : playerType == 1 ? 1 : 0;
+    }
+
     public Integer getSearchable() {
-        return searchable;
+        return searchable == null ? 1 : searchable;
     }
 
     public void setSearchable(Integer searchable) {
@@ -109,7 +115,7 @@ public class Site {
     }
 
     public Integer getFilterable() {
-        return filterable;
+        return filterable == null ? 1 : filterable;
     }
 
     public void setFilterable(Integer filterable) {
@@ -144,21 +150,17 @@ public class Site {
         this.activated = item.equals(this);
     }
 
-    public String getActivatedName() {
-        return (isActivated() ? "√ " : "").concat(getName());
-    }
-
     public boolean isSearchable() {
-        return getSearchable() == null || getSearchable() == 1;
+        return getSearchable() == 1;
     }
 
     public Site setSearchable(boolean searchable) {
-        setSearchable(searchable ? 1 : 0);
+        if (getSearchable() != 0) setSearchable(searchable ? 1 : 2);
         return this;
     }
 
     public boolean isFilterable() {
-        return getFilterable() == null || getFilterable() == 1;
+        return getFilterable() == 1;
     }
 
     public Site setFilterable(boolean filterable) {
@@ -185,8 +187,9 @@ public class Site {
     public Site sync() {
         Site item = find(getKey());
         if (item == null) return this;
-        setSearchable(item.getSearchable());
         setFilterable(item.getFilterable());
+        if (getSearchable() == 0) return this;
+        if (getSearchable() == 1) setSearchable(Math.max(item.getSearchable(), 1));
         return this;
     }
 

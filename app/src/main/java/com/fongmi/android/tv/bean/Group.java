@@ -1,14 +1,20 @@
 package com.fongmi.android.tv.bean;
 
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.fongmi.android.tv.App;
-import com.google.gson.annotations.SerializedName;
+import androidx.annotation.StringRes;
 
+import com.fongmi.android.tv.R;
+import com.fongmi.android.tv.utils.ImgUtil;
+import com.fongmi.android.tv.utils.ResUtil;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Group {
@@ -22,12 +28,27 @@ public class Group {
     @SerializedName("pass")
     private String pass;
 
-    private boolean selected;
     private int position;
+
+    public static List<Group> arrayFrom(String str) {
+        Type listType = new TypeToken<List<Group>>() {}.getType();
+        List<Group> items = new Gson().fromJson(str, listType);
+        return items == null ? Collections.emptyList() : items;
+    }
+
+    public static Group create(String name) {
+        return new Group(name);
+    }
+
+    public static Group create(@StringRes int resId) {
+        return new Group(ResUtil.getString(resId));
+    }
 
     public Group(String name) {
         this.name = name;
-        if (name.contains("_")) setPass(name.split("_")[1]);
+        if (!name.contains("_")) return;
+        setName(name.split("_")[0]);
+        setPass(name.split("_")[1]);
     }
 
     public List<Channel> getChannel() {
@@ -62,18 +83,6 @@ public class Group {
         this.pass = pass;
     }
 
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    public void setSelected(Group item) {
-        this.selected = item.equals(this);
-    }
-
     public int getPosition() {
         return position;
     }
@@ -86,12 +95,20 @@ public class Group {
         return !TextUtils.isEmpty(getPass());
     }
 
-    public int getVisible() {
-        return getLogo().isEmpty() ? View.GONE : View.VISIBLE;
+    public boolean isKeep() {
+        return getName().equals(ResUtil.getString(R.string.keep));
+    }
+
+    public boolean isSetting() {
+        return getName().equals(ResUtil.getString(R.string.live_setting));
+    }
+
+    public boolean skip() {
+        return isKeep() || isSetting();
     }
 
     public void loadLogo(ImageView view) {
-        if (!getLogo().isEmpty()) Glide.with(App.get()).load(getLogo()).into(view);
+        ImgUtil.loadLive(getLogo(), view);
     }
 
     public int find(int number) {
@@ -100,6 +117,12 @@ public class Group {
 
     public int find(String name) {
         return getChannel().lastIndexOf(Channel.create(name));
+    }
+
+    public void add(Channel channel) {
+        int index = getChannel().indexOf(channel);
+        if (index == -1) getChannel().add(Channel.create(channel));
+        else getChannel().get(index).getUrls().addAll(channel.getUrls());
     }
 
     public Channel find(Channel channel) {

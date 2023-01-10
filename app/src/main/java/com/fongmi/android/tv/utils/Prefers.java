@@ -59,6 +59,38 @@ public class Prefers {
         put("keep", keep);
     }
 
+    public static int getWall() {
+        return getInt("wall", 1);
+    }
+
+    public static void putWall(int wall) {
+        put("wall", wall);
+    }
+
+    public static int getReset() {
+        return getInt("reset", 0);
+    }
+
+    public static void putReset(int reset) {
+        put("reset", reset);
+    }
+
+    public static int getPlayer() {
+        return getInt("player", 0);
+    }
+
+    public static void putPlayer(int player) {
+        put("player", player);
+    }
+
+    public static int getDecode() {
+        return getInt("decode", 1);
+    }
+
+    public static void putDecode(int decode) {
+        put("decode", decode);
+    }
+
     public static int getRender() {
         return getInt("render", 0);
     }
@@ -68,7 +100,7 @@ public class Prefers {
     }
 
     public static int getQuality() {
-        return getInt("quality", 1);
+        return getInt("quality", 2);
     }
 
     public static void putQuality(int quality) {
@@ -99,12 +131,36 @@ public class Prefers {
         put("keyword", keyword);
     }
 
-    public static int getScale() {
-        return getInt("scale");
+    public static int getVodScale() {
+        return getInt("vodScale");
     }
 
-    public static void putScale(int scale) {
-        put("scale", scale);
+    public static void putVodScale(int scale) {
+        put("vodScale", scale);
+    }
+
+    public static int getLiveScale() {
+        return getInt("liveScale", getVodScale());
+    }
+
+    public static void putLiveScale(int scale) {
+        put("liveScale", scale);
+    }
+
+    public static boolean isInvert() {
+        return getBoolean("invert", false);
+    }
+
+    public static void putInvert(boolean invert) {
+        put("invert", invert);
+    }
+
+    public static boolean isAcross() {
+        return getBoolean("across", true);
+    }
+
+    public static void putAcross(boolean across) {
+        put("across", across);
     }
 
     public static boolean getUpdate() {

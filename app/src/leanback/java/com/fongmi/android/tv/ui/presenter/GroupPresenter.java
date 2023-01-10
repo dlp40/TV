@@ -32,8 +32,6 @@ public class GroupPresenter extends Presenter {
         ViewHolder holder = (ViewHolder) viewHolder;
         item.loadLogo(holder.binding.logo);
         holder.binding.name.setText(item.getName());
-        holder.binding.logo.setVisibility(item.getVisible());
-        holder.binding.getRoot().setSelected(item.isSelected());
         setOnClickListener(holder, view -> mListener.onItemClick(item));
     }
 
